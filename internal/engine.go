@@ -18,31 +18,25 @@ func New() *Engine {
 func (e *Engine) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	groups := e.router.groups
 	for _, g := range groups {
-		for name, handle := range g.handlerMap {
+		for name, handlerMethodMap := range g.handlerMap {
 			url := "/" + g.groupName + name
 			if r.RequestURI == url {
 				ctx := &Context{
 					W: w,
 					R: r,
 				}
-				if g.handlerMethodMap[ANY] != nil {
-					for _, mName := range g.handlerMethodMap[ANY] {
-						if name == mName {
-							handle(ctx)
-							return
-						}
-					}
+				_, ok := handlerMethodMap[ANY]
+				if ok {
+					handlerMethodMap[ANY](ctx)
+					return
 				}
-				routers := g.handlerMethodMap[r.Method]
-				if routers != nil {
-					for _, mName := range routers {
-						if name == mName {
-							handle(ctx)
-							return
-						}
-					}
+				_, ok = handlerMethodMap[r.Method]
+				if ok {
+					handlerMethodMap[r.Method](ctx)
+					return
 				}
 				w.WriteHeader(http.StatusMethodNotAllowed)
+				return
 			}
 		}
 	}

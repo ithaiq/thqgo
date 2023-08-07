@@ -9,7 +9,10 @@ func main() {
 	engine := internal.New()
 	g := engine.Group("test")
 	g.GET("/hello", func(c *internal.Context) {
-		fmt.Fprintln(c.W, "hello thqgo")
+		fmt.Fprintln(c.W, "hello thqgo get")
+	})
+	g.POST("/hello", func(c *internal.Context) {
+		fmt.Fprintln(c.W, "hello thqgo post")
 	})
 	engine.Run()
 }
