@@ -6,19 +6,23 @@ import (
 )
 
 type Engine struct {
-	router
+	*router
 }
 
 func New() *Engine {
 	return &Engine{
-		router{handlerMap: make(map[string]HandlerFunc)},
+		newRouter(),
 	}
 }
 
 func (e *Engine) Run() {
-	for key, value := range e.handlerMap {
-		http.HandleFunc(key, value)
+	groups := e.router.groups
+	for _, g := range groups {
+		for key, value := range g.handlerMap {
+			http.HandleFunc("/"+g.groupName+key, value)
+		}
 	}
+
 	err := http.ListenAndServe(":8080", nil)
 	if err != nil {
 		log.Fatal(err)

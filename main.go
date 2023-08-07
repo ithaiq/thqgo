@@ -8,7 +8,8 @@ import (
 
 func main() {
 	engine := internal.New()
-	engine.Add("/hello", func(writer http.ResponseWriter, request *http.Request) {
+	g := engine.Group("test")
+	g.Add("/hello", func(writer http.ResponseWriter, request *http.Request) {
 		fmt.Fprintln(writer, "hello thqgo")
 	})
 	engine.Run()
